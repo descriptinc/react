@@ -13,7 +13,7 @@ export default defineConfig({
   external: ['react'],
   splitting: false,
   sourcemap: true,
-  dts: false,
+  dts: true,
   bundle: true,
   format: 'cjs',
   platform: 'node',
