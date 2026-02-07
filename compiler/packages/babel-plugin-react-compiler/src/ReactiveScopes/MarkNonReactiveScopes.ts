@@ -95,6 +95,20 @@ class CollectVisitor extends ReactiveFunctionVisitor<CollectState> {
         state.nonReactiveSourceIds.add(valueId);
       }
     }
+    // Detect function expressions that capture a NonReactive-typed value.
+    // These should get the two-slot pattern so their identity is stable
+    // while always delegating to the latest closure.
+    if (
+      value.kind === 'FunctionExpression' &&
+      instruction.lvalue !== null
+    ) {
+      for (const place of value.loweredFunc.func.context) {
+        if (isNonReactiveType(place.identifier)) {
+          state.nonReactiveSourceIds.add(instruction.lvalue.identifier.id);
+          break;
+        }
+      }
+    }
   }
 }
 

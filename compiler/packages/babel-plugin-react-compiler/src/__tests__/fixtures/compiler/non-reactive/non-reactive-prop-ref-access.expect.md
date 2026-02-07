@@ -40,30 +40,32 @@ import { useRef } from "react";
 type NonReactive<T> = T;
 
 function Component(t0) {
-  const $ = _c(2);
+  const $ = _c(3);
   const { onSubmit } = t0;
   const ref = useRef(null);
   let t1;
-  if ($[0] === Symbol.for("react.memo_cache_sentinel")) {
-    t1 = () => {
-      onSubmit(ref.current.value);
-    };
-    $[0] = t1;
+  t1 = () => {
+    onSubmit(ref.current.value);
+  };
+  $[0] = t1;
+  if ($[1] === Symbol.for("react.memo_cache_sentinel")) {
+    t1 = (...args) => $[0](...args);
+    $[1] = t1;
   } else {
-    t1 = $[0];
+    t1 = $[1];
   }
   const handler = t1;
   let t2;
-  if ($[1] === Symbol.for("react.memo_cache_sentinel")) {
+  if ($[2] === Symbol.for("react.memo_cache_sentinel")) {
     t2 = (
       <>
         <input ref={ref} />
         <button onClick={handler}>Submit</button>
       </>
     );
-    $[1] = t2;
+    $[2] = t2;
   } else {
-    t2 = $[1];
+    t2 = $[2];
   }
   return t2;
 }
