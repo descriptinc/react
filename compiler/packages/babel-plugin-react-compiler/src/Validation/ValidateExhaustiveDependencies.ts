@@ -30,6 +30,9 @@ import {
   isStableType,
   isSubPath,
   isSubPathIgnoringOptionals,
+  isUseEffectHookType,
+  isUseInsertionEffectHookType,
+  isUseLayoutEffectHookType,
   isUseRefType,
   LoadGlobal,
   ManualMemoDependency,
@@ -42,9 +45,7 @@ import {
   eachInstructionValueOperand,
   eachTerminalOperand,
 } from '../HIR/visitors';
-import {Result} from '../Utils/Result';
 import {retainWhere} from '../Utils/utils';
-import {isEffectHook} from './ValidateMemoizedEffectDependencies';
 
 const DEBUG = false;
 
@@ -87,9 +88,7 @@ const DEBUG = false;
  * When we go to compute the dependencies, we then think that the user's manual dep
  * logic is part of what the memo computation logic.
  */
-export function validateExhaustiveDependencies(
-  fn: HIRFunction,
-): Result<void, CompilerError> {
+export function validateExhaustiveDependencies(fn: HIRFunction): void {
   const env = fn.env;
   const reactive = collectReactiveIdentifiersHIR(fn);
 
@@ -104,7 +103,6 @@ export function validateExhaustiveDependencies(
       loc: place.loc,
     });
   }
-  const error = new CompilerError();
   let startMemo: StartMemoize | null = null;
 
   function onStartMemoize(
@@ -145,7 +143,8 @@ export function validateExhaustiveDependencies(
         'all',
       );
       if (diagnostic != null) {
-        error.pushDiagnostic(diagnostic);
+        fn.env.recordError(diagnostic);
+        startMemo.hasInvalidDeps = true;
       }
     }
 
@@ -210,13 +209,12 @@ export function validateExhaustiveDependencies(
           effectReportMode,
         );
         if (diagnostic != null) {
-          error.pushDiagnostic(diagnostic);
+          fn.env.recordError(diagnostic);
         }
       },
     },
     false, // isFunctionExpression
   );
-  return error.asResult();
 }
 
 function validateDependencies(
@@ -761,6 +759,7 @@ function collectDependencies(
                 {
                   optional,
                   property: value.property,
+                  loc: value.loc,
                 },
               ],
               loc: value.loc,
@@ -1114,4 +1113,12 @@ function createDiagnostic(
     description,
     suggestions: suggestion != null ? [suggestion] : null,
   });
+}
+
+export function isEffectHook(identifier: Identifier): boolean {
+  return (
+    isUseEffectHookType(identifier) ||
+    isUseLayoutEffectHookType(identifier) ||
+    isUseInsertionEffectHookType(identifier)
+  );
 }

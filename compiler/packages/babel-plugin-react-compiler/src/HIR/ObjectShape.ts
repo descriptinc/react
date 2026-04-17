@@ -383,12 +383,8 @@ export const BuiltInUseTransitionId = 'BuiltInUseTransition';
 export const BuiltInUseOptimisticId = 'BuiltInUseOptimistic';
 export const BuiltInSetOptimisticId = 'BuiltInSetOptimistic';
 export const BuiltInStartTransitionId = 'BuiltInStartTransition';
-export const BuiltInFireId = 'BuiltInFire';
-export const BuiltInFireFunctionId = 'BuiltInFireFunction';
 export const BuiltInUseEffectEventId = 'BuiltInUseEffectEvent';
 export const BuiltInEffectEventId = 'BuiltInEffectEventFunction';
-export const BuiltInAutodepsId = 'BuiltInAutoDepsId';
-export const BuiltInEventHandlerId = 'BuiltInEventHandlerId';
 export const BuiltInNonReactiveId = 'BuiltInNonReactive';
 export const BuiltInReactiveId = 'BuiltInReactive';
 
@@ -1261,7 +1257,7 @@ addFunction(
     calleeEffect: Effect.ConditionallyMutate,
     returnValueKind: ValueKind.Mutable,
   },
-  BuiltInEventHandlerId,
+  BuiltInNonReactiveId,
 );
 
 addFunction(
@@ -1274,7 +1270,7 @@ addFunction(
     calleeEffect: Effect.ConditionallyMutate,
     returnValueKind: ValueKind.Mutable,
   },
-  BuiltInNonReactiveId,
+  BuiltInReactiveId,
 );
 
 /**

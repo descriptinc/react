@@ -472,6 +472,7 @@ function canMergeScopes(
           identifier: declaration.identifier,
           reactive: true,
           path: [],
+          loc: GeneratedSource,
         })),
       ),
       next.scope.dependencies,
