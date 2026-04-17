@@ -264,6 +264,20 @@ export const EnvironmentConfigSchema = z.object({
   enableNonReactiveAnnotation: z.boolean().default(false),
 
   /**
+   * Enables usage-based inference of non-reactive function identities. When
+   * enabled, a function defined inside a component is automatically compiled
+   * with the two-slot stable-identity pattern if every use of it is a
+   * "safe" consumer — JSX attributes, effect-hook arguments (useEffect,
+   * useLayoutEffect, useInsertionEffect, useEffectEvent). Bails out if the
+   * function is called directly, passed to a memoizing hook (useMemo,
+   * useCallback), stored in an object or array, returned from the component,
+   * or captured by another escaping value. An explicit `Reactive<T>` type
+   * annotation opts a function out of the inference.
+   * Requires enableNonReactiveAnnotation.
+   */
+  enableInferNonReactiveHandlers: z.boolean().default(false),
+
+  /**
    * Allows specifying a function that can populate HIR with type information from
    * Flow
    */

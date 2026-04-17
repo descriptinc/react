@@ -294,7 +294,6 @@ export type HIRFunction = {
   async: boolean;
   directives: Array<string>;
   aliasingEffects: Array<AliasingEffect> | null;
-  propsTypeAnnotations: Map<string, t.FlowType | t.TSType> | null;
 };
 
 /*
@@ -1911,6 +1910,10 @@ export function isNonReactiveType(id: Identifier): boolean {
   return (
     id.type.kind === 'Function' && id.type.shapeId === 'BuiltInNonReactive'
   );
+}
+
+export function isReactiveType(id: Identifier): boolean {
+  return id.type.kind === 'Function' && id.type.shapeId === 'BuiltInReactive';
 }
 
 export function isStableType(id: Identifier): boolean {

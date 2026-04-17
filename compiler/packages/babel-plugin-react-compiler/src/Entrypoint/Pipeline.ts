@@ -77,7 +77,7 @@ import {
   enterSSA,
   rewriteInstructionKindsBasedOnReassignment,
 } from '../SSA';
-import {inferTypes} from '../TypeInference';
+import {inferNonReactiveHandlers, inferTypes} from '../TypeInference';
 import {
   validateContextVariableLValues,
   validateHooksUsage,
@@ -206,6 +206,9 @@ function runWithEnvironment(
 
   inferTypes(hir);
   log({kind: 'hir', name: 'InferTypes', value: hir});
+
+  inferNonReactiveHandlers(hir);
+  log({kind: 'hir', name: 'InferNonReactiveHandlers', value: hir});
 
   if (env.enableValidations) {
     if (env.config.validateHooksUsage) {

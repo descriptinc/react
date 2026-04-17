@@ -390,6 +390,7 @@ export const BuiltInEffectEventId = 'BuiltInEffectEventFunction';
 export const BuiltInAutodepsId = 'BuiltInAutoDepsId';
 export const BuiltInEventHandlerId = 'BuiltInEventHandlerId';
 export const BuiltInNonReactiveId = 'BuiltInNonReactive';
+export const BuiltInReactiveId = 'BuiltInReactive';
 
 // See getReanimatedModuleType() in Globals.ts — this is part of supporting Reanimated's ref-like types
 export const ReanimatedSharedValueId = 'ReanimatedSharedValueId';

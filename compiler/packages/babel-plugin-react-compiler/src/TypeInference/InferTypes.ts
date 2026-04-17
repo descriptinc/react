@@ -33,6 +33,7 @@ import {
   BuiltInMixedReadonlyId,
   BuiltInObjectId,
   BuiltInPropsId,
+  BuiltInReactiveId,
   BuiltInRefValueId,
   BuiltInSetStateId,
   BuiltInUseRefId,
@@ -141,12 +142,7 @@ function* generate(
     }
 
     for (const instr of block.instructions) {
-      yield* generateInstructionTypes(
-        func.env,
-        names,
-        instr,
-        func.propsTypeAnnotations,
-      );
+      yield* generateInstructionTypes(func.env, names, instr);
     }
     const terminal = block.terminal;
     if (terminal.kind === 'return') {
@@ -181,7 +177,6 @@ function* generateInstructionTypes(
   env: Environment,
   names: Map<IdentifierId, string>,
   instr: Instruction,
-  propsTypeAnnotations: Map<string, t.FlowType | t.TSType> | null,
 ): Generator<TypeEquation, void, undefined> {
   const {lvalue, value} = instr;
   const left = lvalue.identifier.type;
@@ -233,13 +228,14 @@ function* generateInstructionTypes(
       if (env.config.enableUseTypeAnnotations) {
         const valueType =
           value.type === null ? makeType() : lowerType(value.type);
-        // When the annotation is a NonReactive, bind the lvalue to the
-        // annotation type first so it takes priority over the inferred
-        // function expression type.
+        // When the annotation is a NonReactive or Reactive marker, bind the
+        // lvalue to the annotation type first so it takes priority over the
+        // inferred function expression type.
         if (
           env.config.enableNonReactiveAnnotation &&
           valueType.kind === 'Function' &&
-          valueType.shapeId === BuiltInNonReactiveId
+          (valueType.shapeId === BuiltInNonReactiveId ||
+            valueType.shapeId === BuiltInReactiveId)
         ) {
           yield equation(value.lvalue.place.identifier.type, valueType);
           yield equation(left, valueType);
@@ -450,23 +446,6 @@ function* generateInstructionTypes(
                   value: makePropertyLiteral(property.key.name),
                 },
               });
-              // If this property is annotated as NonReactive, emit an
-              // additional type equation so the identifier gets the
-              // BuiltInNonReactive function type.
-              if (
-                env.config.enableNonReactiveAnnotation &&
-                propsTypeAnnotations != null
-              ) {
-                const annotation = propsTypeAnnotations.get(
-                  property.key.name,
-                );
-                if (annotation != null) {
-                  yield equation(
-                    property.place.identifier.type,
-                    lowerType(annotation),
-                  );
-                }
-              }
             }
           }
         }
