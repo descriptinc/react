@@ -273,6 +273,8 @@ class Transform extends ReactiveFunctionTransform<ReactiveScopeDependencies | nu
         case 'scope': {
           if (
             current !== null &&
+            !current.block.scope.nonReactive &&
+            !instr.scope.nonReactive &&
             canMergeScopes(current.block, instr, this.temporaries) &&
             areLValuesLastUsedByScope(
               instr.scope,

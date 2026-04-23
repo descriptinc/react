@@ -235,6 +235,37 @@ export const EnvironmentConfigSchema = z.object({
   enableForest: z.boolean().default(false),
 
   /**
+   * Enable use of type annotations in the source to drive type inference. By default
+   * Forget attemps to infer types using only information that is guaranteed correct
+   * given the source, and does not trust user-supplied type annotations. This mode
+   * enables trusting user type annotations.
+   */
+  enableUseTypeAnnotations: z.boolean().default(false),
+
+  /**
+   * Enable support for the NonReactive<T> type annotation. When enabled,
+   * local functions annotated as NonReactive are compiled using a two-slot
+   * pattern that produces a stable function identity while always
+   * delegating to the latest closure.
+   * Requires enableUseTypeAnnotations to also be enabled.
+   */
+  enableNonReactiveAnnotation: z.boolean().default(false),
+
+  /**
+   * Enables usage-based inference of non-reactive function identities. When
+   * enabled, a function defined inside a component is automatically compiled
+   * with the two-slot stable-identity pattern if every use of it is a
+   * "safe" consumer — JSX attributes, effect-hook arguments (useEffect,
+   * useLayoutEffect, useInsertionEffect, useEffectEvent). Bails out if the
+   * function is called directly, passed to a memoizing hook (useMemo,
+   * useCallback), stored in an object or array, returned from the component,
+   * or captured by another escaping value. An explicit `Reactive<T>` type
+   * annotation opts a function out of the inference.
+   * Requires enableNonReactiveAnnotation.
+   */
+  enableInferNonReactiveHandlers: z.boolean().default(false),
+
+  /**
    * Allows specifying a function that can populate HIR with type information from
    * Flow
    */

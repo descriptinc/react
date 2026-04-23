@@ -50,7 +50,11 @@ import {
   validateIdentifierName,
 } from './HIR';
 import HIRBuilder, {Bindings, createTemporaryPlace} from './HIRBuilder';
-import {BuiltInArrayId} from './ObjectShape';
+import {
+  BuiltInArrayId,
+  BuiltInNonReactiveId,
+  BuiltInReactiveId,
+} from './ObjectShape';
 
 /*
  * *******************************************************************************************
@@ -4533,12 +4537,44 @@ export function lowerType(node: t.FlowType | t.TSType): Type {
       if (id.type === 'Identifier' && id.name === 'Array') {
         return {kind: 'Object', shapeId: BuiltInArrayId};
       }
+      if (id.type === 'Identifier' && id.name === 'NonReactive') {
+        return {
+          kind: 'Function',
+          shapeId: BuiltInNonReactiveId,
+          return: makeType(),
+          isConstructor: false,
+        };
+      }
+      if (id.type === 'Identifier' && id.name === 'Reactive') {
+        return {
+          kind: 'Function',
+          shapeId: BuiltInReactiveId,
+          return: makeType(),
+          isConstructor: false,
+        };
+      }
       return makeType();
     }
     case 'TSTypeReference': {
       const typeName = node.typeName;
       if (typeName.type === 'Identifier' && typeName.name === 'Array') {
         return {kind: 'Object', shapeId: BuiltInArrayId};
+      }
+      if (typeName.type === 'Identifier' && typeName.name === 'NonReactive') {
+        return {
+          kind: 'Function',
+          shapeId: BuiltInNonReactiveId,
+          return: makeType(),
+          isConstructor: false,
+        };
+      }
+      if (typeName.type === 'Identifier' && typeName.name === 'Reactive') {
+        return {
+          kind: 'Function',
+          shapeId: BuiltInReactiveId,
+          return: makeType(),
+          isConstructor: false,
+        };
       }
       return makeType();
     }

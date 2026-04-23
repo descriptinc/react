@@ -1621,6 +1621,13 @@ export type ReactiveScope = {
   merged: Set<ScopeId>;
 
   loc: SourceLocation;
+
+  /**
+   * When true, this scope contains a NonReactive function that should use
+   * the two-slot codegen pattern: one slot always holds the latest function,
+   * another slot holds a stable wrapper created once on first render.
+   */
+  nonReactive: boolean;
 };
 
 export type ReactiveScopeDependencies = Set<ReactiveScopeDependency>;
@@ -1896,6 +1903,16 @@ export function isEffectEventFunctionType(id: Identifier): boolean {
   );
 }
 
+export function isNonReactiveType(id: Identifier): boolean {
+  return (
+    id.type.kind === 'Function' && id.type.shapeId === 'BuiltInNonReactive'
+  );
+}
+
+export function isReactiveType(id: Identifier): boolean {
+  return id.type.kind === 'Function' && id.type.shapeId === 'BuiltInReactive';
+}
+
 export function isStableType(id: Identifier): boolean {
   return (
     isSetStateType(id) ||
@@ -1903,7 +1920,8 @@ export function isStableType(id: Identifier): boolean {
     isDispatcherType(id) ||
     isUseRefType(id) ||
     isStartTransitionType(id) ||
-    isSetOptimisticType(id)
+    isSetOptimisticType(id) ||
+    isNonReactiveType(id)
   );
 }
 
